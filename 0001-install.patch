@@ -1,0 +1,137 @@
+From 87124155c48ddd5de390bc5fc31f6ea4cf4d4d86 Mon Sep 17 00:00:00 2001
+From: Bruno Bottazzini <bruno.bottazzini@intel.com>
+Date: Tue, 3 Nov 2015 18:55:53 -0200
+Subject: [PATCH] install
+
+Signed-off-by: Bruno Bottazzini <bruno.bottazzini@intel.com>
+---
+ install.sh | 105 +++++++++++++------------------------------------------------
+ 2 files changed, 29 insertions(+), 83 deletions(-)
+ create mode 100644 Makefile
+
+diff --git a/install.sh b/install.sh
+index 86e75cd..77546b2 100755
+--- a/install.sh
++++ b/install.sh
+@@ -29,96 +29,35 @@
+ # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++BUILDPATH="$BUILDROOT"
++SYSTEMD_SERVICE_PATH="$BUILDPATH/usr/lib/systemd/system"
++AUTOSTART_SYSTEMD_SERVICE_PATH="$BUILDPATH/usr/lib/systemd/system/multi-user.target.wants"
+ 
+-print_need_dep () {
+-    echo "Dependency not found: $1"
+-}
++mkdir -p $BUILDPATH/opt
++mkdir -p $BUILDPATH/lib
++mkdir -p $BUILDPATH/usr/lib64/
++mkdir -p $SYSTEMD_SERVICE_PATH
++mkdir -p $AUTOSTART_SYSTEMD_SERVICE_PATH
+ 
+-RETVAL=0
+-SYSTEMD_SERVICE_PATH="/etc/systemd/system"
++touch $BUILDPATH/lib/tmpfile
++touch $BUILDPATH/usr/lib64/tmpfile
+ 
+-test_dep () {
+-    SILENT=$2
+-    PKG_NAME=$3
+-    test=$(which $1)
+-    if [ -z "$test" ]; then
+-        if [ $SILENT -eq 0 ]; then
+-            print_need_dep $1
+-            exit 1
+-        fi
+-        RETVAL=1
+-    else
+-        RETVAL=0
+-    fi
+-}
+-
+-if [ "$1" == "-h" ] || [ "$1" == "-help" ] || [ "$1" == "--help" ]; then
+-    echo "Usage: install.sh PATH"
+-    echo "  PATH: Installation path that soletta dev-app will be installed."
+-    echo "  If no path is provided, it will use the current dir of install.sh"
+-    exit 0
+-fi
+-
+-test_dep "systemctl" 1
+-if [ $RETVAL -eq 1 ]; then
+-    print_need_dep "systemd"
+-    exit 1
+-fi
+-
+-SYSTEMD_VERSION=$(systemctl show -p Version | cut -f 2 -d '=')
+-if [ $SYSTEMD_VERSION -lt 216 ]; then
+-   echo "Systemd version 216 or later is required"
+-   exit 1
+-fi
+-
+-test_dep "node" 1
+-if [ $RETVAL -eq 1 ]; then
+-    test_dep "nodejs" 0 "nodejs"
+-    NODE_BIN_NAME="nodejs"
+-else
+-    NODE_BIN_NAME="node"
+-fi
+-
+-test_dep "sol-fbp-runner" 1
+-if [ $RETVAL -eq 1 ]; then
+-    print_need_dep "soletta"
+-    echo "To install soletta: https://github.com/solettaproject/soletta/wiki#packages"
+-    exit 1
+-fi
++SERVER_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
+ 
+-test_dep "dot" 0 "graphviz"
++rm -rf $SERVER_PATH/node_modules/protractor/node_modules/adm-zip/test/assets/attributes_test
++rm -f $SERVER_PATH/client/libs/datatables/media/images/Sorting\ icons.psd
+ 
+-test_dep "npm" 0 "npm"
++#Installing server
++cp -r $SERVER_PATH $BUILDPATH/opt
+ 
+-test_dep "bower" 1 2>/dev/null
+-if [ $RETVAL -eq 1 ]; then
+-     print_need_dep "bower"
+-     echo "sudo npm install -g bower"
+-     exit 1
+-else
+-     BOWER=$(bower -v)
+-     if [ -z "$BOWER" ]; then
+-        echo "If you are running distro debian based machine run:"
+-        echo "sudo apt-get install nodejs-legacy"
+-        exit 1
+-    fi
+-fi
++#Installing required systemd services
++cp $SERVER_PATH/scripts/units/fbp-runner@.service $SYSTEMD_SERVICE_PATH/
++cp $SERVER_PATH/scripts/units/soletta-dev-app-server.service.in $SYSTEMD_SERVICE_PATH/soletta-dev-app-server.service
+ 
+-npm install
+-bower install
++sed -i "s@PATH@"$SERVER_PATH"@" $SYSTEMD_SERVICE_PATH/soletta-dev-app-server.service &&
++sed -i "s@"NODE_BIN_NAME"@"$NODE_BIN_NAME"@" $SYSTEMD_SERVICE_PATH/soletta-dev-app-server.service
+ 
+-echo "Installing required services..."
+-SERVER_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
+-if [ -n "$1" ]; then
+-    cp -r $SERVER_PATH $1
+-    SERVER_PATH=$1
+-fi
++#Autostart Dev-App in boot time
++ln -sf /lib/systemd/system/soletta-dev-app-server.service $AUTOSTART_SYSTEMD_SERVICE_PATH/soletta-dev-app-server.service
+ 
+-su -c "cp $SERVER_PATH/scripts/units/fbp-runner@.service $SYSTEMD_SERVICE_PATH/ &&
+-       cp $SERVER_PATH/scripts/units/soletta-dev-app-server.service.in $SYSTEMD_SERVICE_PATH/soletta-dev-app-server.service &&
+-       sed -i "s@PATH@"$SERVER_PATH"@" $SYSTEMD_SERVICE_PATH/soletta-dev-app-server.service &&
+-       sed -i "s@"NODE_BIN_NAME"@"$NODE_BIN_NAME"@" $SYSTEMD_SERVICE_PATH/soletta-dev-app-server.service"
+-systemctl daemon-reload
+-echo "to start server run:"
+-echo "systemctl start soletta-dev-app-server"
+ exit 0
+-- 
+2.6.2
+
