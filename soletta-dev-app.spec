@@ -4,9 +4,11 @@
 #
 Name     : soletta-dev-app
 Version  : _standalone_v1_beta4
-Release  : 2
+Release  : 3
 URL      : https://github.com/solettaproject/soletta-dev-app/releases/download/v1_beta4/soletta-dev-app_standalone_v1_beta4.tar.gz
 Source0  : https://github.com/solettaproject/soletta-dev-app/releases/download/v1_beta4/soletta-dev-app_standalone_v1_beta4.tar.gz
+Source1  : fbp-runner@.service
+Source2  : soletta-dev-app-server.service
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : Apache-2.0 BSD-2-Clause BSD-3-Clause ISC MIT MPL-2.0 NCSA W3C
@@ -36,6 +38,9 @@ make V=1  %{?_smp_mflags}
 %install
 rm -rf %{buildroot}
 %make_install
+mkdir -p %{buildroot}/usr/lib/systemd/system
+install -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/fbp-runner@.service
+install -m 0644 %{SOURCE2} %{buildroot}/usr/lib/systemd/system/soletta-dev-app-server.service
 
 %files
 %defattr(-,root,root,-)
