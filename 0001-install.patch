@@ -112,8 +112,8 @@ index 86e75cd..77546b2 100755
  
 -npm install
 -bower install
-+sed -i "s@PATH@"$SERVER_PATH"@" $SYSTEMD_SERVICE_PATH/soletta-dev-app-server.service &&
-+sed -i "s@"NODE_BIN_NAME"@"$NODE_BIN_NAME"@" $SYSTEMD_SERVICE_PATH/soletta-dev-app-server.service
++sed -i "s@PATH@"/opt"@" $SYSTEMD_SERVICE_PATH/soletta-dev-app-server.service &&
++sed -i "s@"NODE_BIN_NAME"@"/usr/bin/node"@" $SYSTEMD_SERVICE_PATH/soletta-dev-app-server.service
  
 -echo "Installing required services..."
 -SERVER_PATH=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
