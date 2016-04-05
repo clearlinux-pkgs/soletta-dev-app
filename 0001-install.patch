@@ -1,22 +1,21 @@
-From 87124155c48ddd5de390bc5fc31f6ea4cf4d4d86 Mon Sep 17 00:00:00 2001
+From 6101f2e796fc92dd6c5e64b81fe68678a2648691 Mon Sep 17 00:00:00 2001
 From: Bruno Bottazzini <bruno.bottazzini@intel.com>
-Date: Tue, 3 Nov 2015 18:55:53 -0200
+Date: Tue, 5 Apr 2016 14:32:19 -0300
 Subject: [PATCH] install
 
 Signed-off-by: Bruno Bottazzini <bruno.bottazzini@intel.com>
 ---
  install.sh | 105 +++++++++++++------------------------------------------------
- 2 files changed, 29 insertions(+), 83 deletions(-)
- create mode 100644 Makefile
+ 1 file changed, 22 insertions(+), 83 deletions(-)
 
 diff --git a/install.sh b/install.sh
-index 86e75cd..77546b2 100755
+index 1eba74a..ee9a37b 100755
 --- a/install.sh
 +++ b/install.sh
-@@ -29,96 +29,35 @@
- # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@@ -15,96 +15,35 @@
+ # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
 +BUILDPATH="$BUILDROOT"
 +SYSTEMD_SERVICE_PATH="$BUILDPATH/usr/lib/systemd/system"
 +AUTOSTART_SYSTEMD_SERVICE_PATH="$BUILDPATH/usr/lib/systemd/system/multi-user.target.wants"
@@ -133,5 +132,5 @@ index 86e75cd..77546b2 100755
 -echo "systemctl start soletta-dev-app-server"
  exit 0
 -- 
-2.6.2
+2.7.1
 
