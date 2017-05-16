@@ -4,7 +4,7 @@
 #
 Name     : soletta-dev-app
 Version  : _standalone_v1_beta8
-Release  : 6
+Release  : 7
 URL      : https://github.com/solettaproject/soletta-dev-app/releases/download/v1_beta8/soletta-dev-app_standalone_v1_beta8.tar.gz
 Source0  : https://github.com/solettaproject/soletta-dev-app/releases/download/v1_beta8/soletta-dev-app_standalone_v1_beta8.tar.gz
 Source1  : fbp-runner@.service
